@@ -2,49 +2,68 @@ import React from 'react'
 
 const LoginSignup = () => {
   return (
-    <div className="login-signup w-full min-h-screen bg-[#fce3fe] flex items-start justify-center pt-24">
-      <div className="login-signup-container w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+    <div className="login-signup w-full min-h-screen bg-gradient-to-br from-pink-50 to-purple-100 flex items-center justify-center p-4">
+      <div className="login-signup-container w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         {/* Heading */}
-        <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Sign Up</h1>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+            Create Account
+          </h1>
+          <p className="text-gray-600 text-base sm:text-lg">
+            Join us and start shopping
+          </p>
+        </div>
 
         {/* Input Fields */}
-        <div className="login-signup-fields flex flex-col gap-6">
-          <input
-            className="h-16 w-full px-4 border border-gray-300 rounded-lg text-gray-700 text-lg outline-none focus:ring-2 focus:ring-pink-300"
-            type="text"
-            placeholder="Your Name"
-          />
-          <input
-            className="h-16 w-full px-4 border border-gray-300 rounded-lg text-gray-700 text-lg outline-none focus:ring-2 focus:ring-pink-300"
-            type="email"
-            placeholder="Email Address"
-          />
-          <input
-            className="h-16 w-full px-4 border border-gray-300 rounded-lg text-gray-700 text-lg outline-none focus:ring-2 focus:ring-pink-300"
-            type="password"
-            placeholder="Password"
-          />
+        <div className="login-signup-fields flex flex-col gap-4 sm:gap-6">
+          <div className="relative">
+            <input
+              className="w-full h-14 sm:h-16 px-4 border border-gray-300 rounded-xl text-gray-700 text-base sm:text-lg outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition-all"
+              type="text"
+              placeholder="Your Name"
+            />
+          </div>
+          <div className="relative">
+            <input
+              className="w-full h-14 sm:h-16 px-4 border border-gray-300 rounded-xl text-gray-700 text-base sm:text-lg outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition-all"
+              type="email"
+              placeholder="Email Address"
+            />
+          </div>
+          <div className="relative">
+            <input
+              className="w-full h-14 sm:h-16 px-4 border border-gray-300 rounded-xl text-gray-700 text-base sm:text-lg outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition-all"
+              type="password"
+              placeholder="Password"
+            />
+          </div>
         </div>
 
         {/* Button */}
-        <button className="w-full h-16 bg-[#ff4141] text-white text-2xl font-medium rounded-lg mt-6 hover:bg-[#e03b3b] transition">
+        <button className="w-full h-14 sm:h-16 bg-gradient-to-r from-pink-500 to-red-500 text-white text-lg sm:text-xl font-semibold rounded-xl mt-6 hover:from-pink-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95">
           Continue
         </button>
 
-        {/* Login Link */}
-        <p className="mt-4 text-gray-600 text-lg">
-          Already have an account? 
-          <span className="text-[#ff4141] font-semibold ml-1 cursor-pointer">Login here</span>
-        </p>
-
         {/* Terms Checkbox */}
-        <div className="flex items-start gap-3 mt-4 text-gray-600 text-sm">
-          <input type="checkbox" className="w-4 h-4 mt-1 accent-pink-300" />
-          <p className="leading-tight pt-[2px]">
+        <div className="flex items-start gap-3 mt-4 text-gray-600 text-xs sm:text-sm">
+          <input 
+            type="checkbox" 
+            className="w-4 h-4 mt-1 accent-pink-500 flex-shrink-0" 
+          />
+          <p className="leading-tight">
             By continuing, I agree to the terms of use & privacy policy
           </p>
         </div>
 
+        {/* Login Link */}
+        <div className="text-center mt-6 pt-4 border-t border-gray-200">
+          <p className="text-gray-600 text-base">
+            Already have an account?{" "}
+            <button className="text-pink-600 font-semibold hover:text-pink-700 transition-colors">
+              Login here
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   )

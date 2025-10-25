@@ -4,31 +4,32 @@ import Item from '../item/Item';
 
 const Popular = () => {
   return (
-    <section className="w-full flex flex-col items-center gap-6 py-16 bg-white">
+    <div className="shop-category max-w-[1400px] mx-auto px-4 pb-[30px]">
       
-      {/* Title */}
-      <h1 className="text-[#171717] text-3xl md:text-[50px] font-semibold text-center">
-        POPULAR IN WOMEN
-      </h1>
-      <hr className="w-[180px] h-[6px] rounded-[10px] bg-[#252525]" />
+      {/* Title Section - matching ShopCategory's banner section */}
+      <div className="w-full md:w-[90%] lg:w-[82%] mx-auto my-8">
+        <h1 className="text-[#171717] text-3xl md:text-5xl font-semibold text-center">
+          POPULAR IN WOMEN
+        </h1>
+        <hr className="w-[120px] md:w-[200px] h-[4px] md:h-[6px] rounded-[10px] bg-[#252525] mt-3 mx-auto" />
+      </div>
 
-      {/* Product List */}
-      <div className="mt-10 w-full max-w-[1400px] px-4 sm:px-6 md:px-12">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8">
-          {data_product.map((item, i) => (
-            <Item
-              key={i}
-              id={item.id}
-              name={item.name}
-              image={item.image}
-              new_price={item.new_price}
-              old_price={item.old_price}
-            />
-          ))}
-        </div>
+      {/* Product Grid - Same structure as ShopCategory */}
+      <div className="shopcategory-product w-full md:w-[90%] lg:w-[82%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+        {data_product.map((item, i) => (
+          <Item
+            key={i}
+            id={item.id}
+            name={item.name}
+            description={item.description}
+            image={item.image}
+            new_price={item.new_price}
+            old_price={item.old_price}
+          />
+        ))}
       </div>
       
-    </section>
+    </div>
   );
 }
 

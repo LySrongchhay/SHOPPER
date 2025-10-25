@@ -1,59 +1,61 @@
-import React from 'react'
-import star_icon from '../assets/star_icon.png'
-import star_dull_icon from '../assets/star_dull_icon.png'
+import React, { useContext } from 'react';
+import { ShopContext } from '../contexts/ShopContext';
+import drop_icon from '../components/assets/dropdown_icon.png';
+import Item from '../components/item/Item.jsx';
 
-const ProductDisplay = (props) => {
-    const {product} = props;
+const ShopCategory = (props) => {
+  const { all_product } = useContext(ShopContext); // ✅ fixed typo
+
   return (
-    <div className='productdisplay flex mx-[170px]'>
-        <div className="productdisplay-left flex gap-[17px]">
-            <div className="productdisplay-img-list flex flex-col gap-[16px] ">
-                <img className=' h-[163px] ' src={product.image} alt="" />
-                <img className=' h-[163px] ' src={product.image} alt="" />
-                <img className=' h-[163px]' src={product.image} alt="" />
-                <img className=' h-[163px]' src={product.image} alt="" />
-            </div>
-            <div className='productdisplay-img'>
-                <img className='productdisplay-main-img w-[586px] h-[700px]' src={product.image} alt="" />
-            </div>
-        </div>
-        <div className="productdisplay-right mx-70px flex flex-col">
-            <h1 className=' text-[#3d3d3d] text-[40px] font-bold'>{product.name}</h1>
-            <div className="productdisplay-right-star flex items-center mt-[13px] gap-[5px] text-[#1c1c1c] text-[16px]">
-                <img src={star_icon} alt="" />
-                <img src={star_icon} alt="" />
-                <img src={star_icon} alt="" />
-                <img src={star_icon} alt="" />
-                <img src={star_dull_icon} alt="" />
-            </div>
-            <div className='productdisplay-right-price flex my-[40px] gap-[30px] text-2xl font-bold '>
-                <div className="productdisplay-right-price-old text-[#818181] line-through">
-                    ${product.old_price}
-                </div>
-                <div className="productdisplay-right-price-new text-[#ff4141]">
-                    ${product.new_price}
-                </div>
-                <div className="productdisplay-right-description">
-                    A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment
-                </div>
-                <div className="productdisplay-right-size">
-                    <h1 className='mt-[55px] text-[#656565] text-xl font-semibold'>Select Size</h1>
-                    <div className="productdisplay-right-size">
-                        <div className=' py-[18px] px-[24px] bg-[#fbfbfb] border border-solid border-[#ebebeb] rounded-[3px] cursor-pointer'>S</div>
-                        <div className=' py-[18px] px-[24px] bg-[#fbfbfb] border border-solid border-[#ebebeb] rounded-[3px] cursor-pointer'>M</div>
-                        <div className=' py-[18px] px-[24px] bg-[#fbfbfb] border border-solid border-[#ebebeb] rounded-[3px] cursor-pointer'>L</div>
-                        <div className=' py-[18px] px-[24px] bg-[#fbfbfb] border border-solid border-[#ebebeb] rounded-[3px] cursor-pointer'>XL</div>
-                        <div className=' py-[18px] px-[24px] bg-[#fbfbfb] border border-solid border-[#ebebeb] rounded-[3px] cursor-pointer'>XXL</div>
-                    </div>   
-                </div>
-                <button className=' py-[20px] px-[40px] w-[200px] text-[16px] font-semibold text-white bg-[#ff4141] mb-[40px] border-none outline-none cursor-pointer'>ADD TO CART</button>
-                <p className='productdisplay-right-category mt-[10px] '><span className=' font-semibold'>Category :</span>Women, T-Shirt, Crop Top</p>
-                <p className='productdisplay-right-category mt-[10px]'><span className=' font-semibold'>Tag :</span>Modern, Latest</p>
+    <div className="shop-category max-w-[1400px] mx-auto px-4">
+      {/* Banner */}
+      <img 
+        className="shopcategory-banner block w-full md:w-[90%] lg:w-[82%] mx-auto my-8 rounded-lg object-cover" 
+        src={props.banner} 
+        alt="" 
+      />
 
-            </div>
+      {/* Top Info */}
+      <div className="shopcategory-indexsort flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 w-full md:w-[90%] lg:w-[82%] mx-auto">
+        <p className="font-semibold text-gray-700">
+          <span className="font-bold">Showing 1-12</span> out of 36 products
+        </p>
+        <div className="shopcategory-sort flex items-center gap-2 py-2 px-4 rounded-full border border-gray-400 cursor-pointer hover:bg-gray-100 transition">
+          Sort by
+          <img className="w-4 h-4 object-contain" src={drop_icon} alt="" />
         </div>
+      </div>
+
+      {/* Product Grid */}
+      <div className="shopcategory-product w-full md:w-[90%] lg:w-[82%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
+        {all_product?.map((item, i) => {
+          if (props.category === item.category) {
+            return (
+              <Item
+                key={i}
+                id={item.id}
+                name={item.name}
+                description={item.description}
+                image={item.image}
+                new_price={item.new_price}
+                old_price={item.old_price}
+                
+              />
+            );
+          }
+          return null;
+        })}
+      </div>
+     <div className="shopcategory-loadmore flex justify-center my-16">
+        <div className="w-[180px] h-[50px] rounded-[50px] bg-[#ededed] text-[#787878] text-[16px] font-medium flex items-center justify-center cursor-pointer hover:brightness-95 transition mt-[12px]">
+          Explore More
+        </div>
+      </div>
+
+
     </div>
-  )
-}
 
-export default ProductDisplay
+  );
+};
+
+export default ShopCategory;
