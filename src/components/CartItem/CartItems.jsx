@@ -10,6 +10,7 @@ const CartItems = () => {
     cartItems, 
     addToCart, 
     removeFromCart,
+    removeEntireItem,
     clearCart 
   } = useContext(ShopContext);
   
@@ -17,6 +18,7 @@ const CartItems = () => {
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoError, setPromoError] = useState("");
+  const [editingSize, setEditingSize] = useState(null);
   const navigate = useNavigate();
 
   // Promo codes configuration
@@ -26,7 +28,8 @@ const CartItems = () => {
   };
 
   // Check if cart is empty
-  const isCartEmpty = Object.values(cartItems).every(quantity => quantity === 0);
+  const isCartEmpty = Object.keys(cartItems).length === 0 || 
+    Object.values(cartItems).every(item => Object.keys(item).length === 0);
 
   // Calculate subtotal
   const subtotal = getTotalCartAmount();
@@ -39,18 +42,67 @@ const CartItems = () => {
     if (promo.type === "percentage") {
       return (subtotal * promo.discount) / 100;
     } else {
-      return Math.min(promo.discount, subtotal); // Don't discount more than subtotal
+      return Math.min(promo.discount, subtotal);
     }
   };
 
   const discount = calculateDiscount();
   const finalTotal = Math.max(0, subtotal - discount);
 
+  // Get all cart items with sizes
+  const getCartItemsWithSizes = () => {
+    const items = [];
+    for (const itemId in cartItems) {
+      const itemSizes = cartItems[itemId];
+      for (const size in itemSizes) {
+        if (itemSizes[size] > 0) {
+          const product = all_product.find(p => p.id === Number(itemId));
+          if (product) {
+            items.push({
+              product,
+              size,
+              quantity: itemSizes[size],
+              total: product.new_price * itemSizes[size],
+              key: `${itemId}-${size}`
+            });
+          }
+        }
+      }
+    }
+    return items;
+  };
+
+  const cartItemsWithSizes = getCartItemsWithSizes();
+
+  // Calculate total items in cart
+  const totalItems = cartItemsWithSizes.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Function to change size
+  const changeSize = (itemId, oldSize, newSize) => {
+    if (oldSize === newSize) {
+      setEditingSize(null);
+      return;
+    }
+
+    // Get current quantity
+    const currentQuantity = cartItems[itemId][oldSize];
+    
+    // Remove from old size
+    removeEntireItem(itemId, oldSize);
+    
+    // Add to new size with same quantity
+    for (let i = 0; i < currentQuantity; i++) {
+      addToCart(itemId, newSize);
+    }
+    
+    setEditingSize(null);
+  };
+
   const handleProceedToCheckout = () => {
     if (isCartEmpty) return;
     setShowThankYou(true);
     clearCart();
-    setAppliedPromo(null); // Clear applied promo on checkout
+    setAppliedPromo(null);
   };
 
   const handleContinueShopping = () => {
@@ -72,7 +124,6 @@ const CartItems = () => {
       setPromoError("");
       setPromoCode("");
     } else if (promoCodes[promoCode]) {
-      // Handle case-sensitive "ETEC Center"
       setAppliedPromo(promoCode);
       setPromoError("");
       setPromoCode("");
@@ -82,14 +133,10 @@ const CartItems = () => {
     }
   };
 
-  
   const removePromoCode = () => {
     setAppliedPromo(null);
     setPromoError("");
   };
-
-  // Calculate total items in cart
-  const totalItems = Object.values(cartItems).reduce((sum, quantity) => sum + quantity, 0);
 
   if (isCartEmpty && !showThankYou) {
     return (
@@ -153,69 +200,108 @@ const CartItems = () => {
         </p>
       </div>
 
-      {/* Header Row */}
-      <div className="hidden md:grid grid-cols-[0.5fr_2fr_1fr_1fr_1fr_1fr] items-center gap-8 py-5 text-[#454545] text-lg font-semibold border-b border-[#e2e2e2]">
-        <p>Product</p>
+      {/* Header Row - FIXED ALIGNMENT */}
+      <div className="hidden md:grid grid-cols-[80px_1fr_100px_100px_120px_100px_80px] items-center gap-4 py-5 text-[#454545] text-lg font-semibold border-b border-[#e2e2e2]">
+        <p className="text-center">Product</p>
         <p>Title</p>
-        <p>Price</p>
-        <p>Quantity</p>
-        <p>Total</p>
+        <p className="text-center">Size</p>
+        <p className="text-center">Price</p>
+        <p className="text-center">Quantity</p>
+        <p className="text-center">Total</p>
         <p className="text-center">Remove</p>
       </div>
 
-      {/* Cart Items */}
-      {all_product.map((e) => {
-        if (cartItems[e.id] > 0) {
-          return (
-            <div
-              key={e.id}
-              className="grid grid-cols-2 md:grid-cols-[0.5fr_2fr_1fr_1fr_1fr_1fr] items-center gap-6 md:gap-8 py-5 border-b border-[#e2e2e2] text-[#454545]"
+      {/* Cart Items - FIXED ALIGNMENT */}
+      {cartItemsWithSizes.map((item, index) => (
+        <div
+          key={item.key}
+          className="grid grid-cols-2 md:grid-cols-[80px_1fr_100px_100px_120px_100px_80px] items-center gap-4 py-5 border-b border-[#e2e2e2] text-[#454545]"
+        >
+          {/* Product Image */}
+          <div className="flex justify-center">
+            <img
+              className="h-[60px] w-[60px] object-contain"
+              src={item.product.image}
+              alt={item.product.name}
+            />
+          </div>
+
+          {/* Product Title */}
+          <p className="font-medium text-[15px] md:text-[17px] text-gray-800">
+            {item.product.name}
+          </p>
+          
+          {/* Size Display/Edit */}
+          <div className="flex flex-col items-center gap-1">
+            {editingSize === item.key ? (
+              <div className="flex flex-col items-center gap-2">
+                <select 
+                  defaultValue={item.size}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  onChange={(e) => changeSize(item.product.id, item.size, e.target.value)}
+                >
+                  {['XS','S','M','L','XL'].map(size => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+                <button 
+                  onClick={() => setEditingSize(null)}
+                  className="text-xs text-gray-500 hover:text-gray-700"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-medium">Size {item.size}</span>
+                <button 
+                  onClick={() => setEditingSize(item.key)}
+                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                >
+                  Change
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Price */}
+          <p className="text-center font-medium">${item.product.new_price}</p>
+
+          {/* Quantity Buttons */}
+          <div className="flex items-center justify-center gap-0">
+            <button
+              onClick={() => removeFromCart(item.product.id, item.size)}
+              className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors rounded-l"
             >
-              <img
-                className="h-[60px] w-[60px] object-contain"
-                src={e.image}
-                alt={e.name}
-              />
-              <p className="font-medium text-[15px] md:text-[17px]">{e.name}</p>
-              <p className="hidden md:block">${e.new_price}</p>
+              -
+            </button>
+            <span className="w-12 text-center border-y border-gray-300 py-1 font-medium">
+              {item.quantity}
+            </span>
+            <button
+              onClick={() => addToCart(item.product.id, item.size)}
+              className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors rounded-r"
+            >
+              +
+            </button>
+          </div>
 
-              {/* Quantity Buttons */}
-              <div className="flex items-center justify-center ml-[-60px]">
-                <button
-                  onClick={() => removeFromCart(e.id)}
-                  className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
-                >
-                  -
-                </button>
-                <span className="w-[50px] text-center border-t border-b border-gray-300 py-1">
-                  {cartItems[e.id]}
-                </span>
-                <button
-                  onClick={() => addToCart(e.id)}
-                  className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors"
-                >
-                  +
-                </button>
-              </div>
+          {/* Total */}
+          <p className="text-center font-semibold">
+            ${item.total.toFixed(2)}
+          </p>
 
-              <p className="hidden md:block">
-                ${e.new_price * cartItems[e.id]}
-              </p>
-
-              {/* Remove icon aligned under "Remove" text */}
-              <div className="flex justify-center">
-                <img
-                  className="w-[20px] cursor-pointer hover:scale-110 transition-transform"
-                  src={remove_icon}
-                  onClick={() => removeFromCart(e.id)}
-                  alt="remove"
-                />
-              </div>
-            </div>
-          );
-        }
-        return null;
-      })}
+          {/* Remove icon */}
+          <div className="flex justify-center">
+            <img
+              className="w-[20px] cursor-pointer hover:scale-110 transition-transform"
+              src={remove_icon}
+              onClick={() => removeEntireItem(item.product.id, item.size)}
+              alt="remove"
+            />
+          </div>
+        </div>
+      ))}
 
       {/* Bottom Section */}
       <div className="cartitem-down flex flex-col md:flex-row justify-between gap-10 mt-20">
@@ -314,7 +400,7 @@ const CartItems = () => {
               value={promoCode}
               onChange={(e) => {
                 setPromoCode(e.target.value);
-                setPromoError(""); // Clear error when typing
+                setPromoError("");
               }}
               disabled={!!appliedPromo}
             />
@@ -326,22 +412,6 @@ const CartItems = () => {
               {appliedPromo ? "Applied" : "Apply"}
             </button>
           </form>
-          
-          {/* Available Promo Codes */}
-          
-          {/* <div className="mt-4 space-y-2">
-            <p className="text-sm text-gray-500 font-semibold">Available Promo Codes:</p>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">SHOPPER</span>
-                <span className="text-sm text-gray-600">- 15% off entire order</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">ETEC Center</span>
-                <span className="text-sm text-gray-600">- $10 off your order</span>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
 

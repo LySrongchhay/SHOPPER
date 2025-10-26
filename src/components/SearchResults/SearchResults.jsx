@@ -8,6 +8,9 @@ const SearchResults = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [sortBy, setSortBy] = useState('relevance');
 
+    // All possible categories
+    const allCategories = ['all', 'men', 'women', 'kid'];
+    
     // Simple filter function
     const getFilteredProducts = () => {
         let filtered = [...searchResults];
@@ -31,74 +34,91 @@ const SearchResults = () => {
 
     const filteredProducts = getFilteredProducts();
 
-    // SIMPLIFIED: Always show all categories (no checking for products)
-    const categories = ['all', 'men', 'women', 'kid'];
+    // Get count for each category
+    const getCategoryCount = (category) => {
+        if (category === 'all') return searchResults.length;
+        return searchResults.filter(item => item.category === category).length;
+    };
 
     return (
-        <div className="max-w-[1400px] mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold mb-2">
+            <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">
                     Search Results for "{searchTerm}"
                 </h1>
-                <p className="text-gray-600 mb-4">
-                    Found {filteredProducts.length} products
+                <p className="text-lg text-gray-600 mb-8">
+                    Found {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+                    {selectedCategory !== 'all' && ` in ${selectedCategory}`}
                 </p>
+            </div>
+
+            {/* Sort and Stats */}
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-4 mb-8">
+                <div className="text-gray-600">
+                    Showing <span className="font-bold text-blue-600">{filteredProducts.length}</span> of{' '}
+                    <span className="font-bold text-gray-900">{searchResults.length}</span> products
+                    {selectedCategory !== 'all' && ` in ${selectedCategory}`}
+                </div>
                 
-                {/* Simple Filters Row */}
-                <div className="flex flex-wrap gap-4 mb-6">
-                    {/* Category Filter */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Category:</label>
-                        <select 
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="border border-gray-300 rounded px-3 py-2"
-                        >
-                            {categories.map(cat => (
-                                <option key={cat} value={cat}>
-                                    {cat === 'all' ? 'All Categories' : `${cat.charAt(0).toUpperCase() + cat.slice(1)}`}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    
-                    {/* Sort Filter */}
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Sort by:</label>
-                        <select 
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="border border-gray-300 rounded px-3 py-2"
-                        >
-                            <option value="relevance">Relevance</option>
-                            <option value="price-low-high">Price: Low to High</option>
-                            <option value="price-high-low">Price: High to Low</option>
-                            <option value="name-a-z">Name: A-Z</option>
-                        </select>
-                    </div>
-                    
-                    {/* Clear Filters Button */}
-                    {(selectedCategory !== 'all' || sortBy !== 'relevance') && (
-                        <div className="flex items-end">
-                            <button 
-                                onClick={() => {
-                                    setSelectedCategory('all');
-                                    setSortBy('relevance');
-                                }}
-                                className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                            >
-                                Clear Filters
-                            </button>
-                        </div>
-                    )}
+                {/* Sort dropdown */}
+                <div className="flex gap-4">
+                    <select 
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                        <option value="relevance">Sort by Relevance</option>
+                        <option value="price-low-high">Price: Low to High</option>
+                        <option value="price-high-low">Price: High to Low</option>
+                        <option value="name-a-z">Name: A to Z</option>
+                    </select>
                 </div>
             </div>
 
+            {/* Category Filter Pills - Show all categories */}
+            <div className="flex flex-wrap gap-2 mb-6 justify-center">
+                {allCategories.map(category => {
+                    const count = getCategoryCount(category);
+                    
+                    return (
+                        <button
+                            key={category}
+                            onClick={() => setSelectedCategory(category)}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                selectedCategory === category
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                        >
+                            {category === 'all' ? 'All' : category.charAt(0).toUpperCase() + category.slice(1)}
+                            {` (${count})`}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* Clear Filters Button */}
+            {(selectedCategory !== 'all' || sortBy !== 'relevance') && (
+                <div className="text-center mb-6">
+                    <button 
+                        onClick={() => {
+                            setSelectedCategory('all');
+                            setSortBy('relevance');
+                        }}
+                        className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                    >
+                        Clear All Filters
+                    </button>
+                </div>
+            )}
+
             {/* Results */}
             {filteredProducts.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">
+                <div className="text-center py-16">
+                    <div className="text-6xl mb-4">🔍</div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">No Products Found</h3>
+                    <p className="text-gray-600 mb-4">
                         No products found for "{searchTerm}"
                         {selectedCategory !== 'all' && ` in ${selectedCategory} category`}
                     </p>
@@ -108,14 +128,14 @@ const SearchResults = () => {
                                 setSelectedCategory('all');
                                 setSortBy('relevance');
                             }}
-                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                         >
                             Clear Filters
                         </button>
                     )}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredProducts.map((item) => (
                         <Item
                             key={item.id}

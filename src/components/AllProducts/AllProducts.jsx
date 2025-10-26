@@ -6,9 +6,17 @@ const AllProducts = () => {
   const { all_product } = useContext(ShopContext);
   const [displayCount, setDisplayCount] = useState(20);
   const [sortOption, setSortOption] = useState('default');
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
-  // Sort products
-  const sortedProducts = [...all_product].sort((a, b) => {
+  // Get unique categories
+  const categories = ['all', ...new Set(all_product.map(item => item.category))];
+
+  // Filter and sort products
+  const filteredProducts = all_product.filter(item => 
+    categoryFilter === 'all' || item.category === categoryFilter
+  );
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortOption) {
       case 'price-low-high':
         return a.new_price - b.new_price;
@@ -39,28 +47,36 @@ const AllProducts = () => {
     setDisplayCount(20);
   };
 
+  // Reset display count when filter changes
+  React.useEffect(() => {
+    setDisplayCount(20);
+  }, [categoryFilter, sortOption]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">All Products</h1>
         <p className="text-lg text-gray-600 mb-8">
-          Discover our complete collection of {sortedProducts.length} amazing products
+          Discover our complete collection of {filteredProducts.length} amazing products
+          {categoryFilter !== 'all' && ` in ${categoryFilter}`}
         </p>
       </div>
 
-      {/* Sort and Stats */}
+      {/* Sort and Stats - Only sort dropdown remains */}
       <div className="flex flex-col lg:flex-row justify-between items-center gap-4 mb-8">
         <div className="text-gray-600">
           Showing <span className="font-bold text-blue-600">{displayedProducts.length}</span> of{' '}
-          <span className="font-bold text-gray-900">{sortedProducts.length}</span> products
+          <span className="font-bold text-gray-900">{filteredProducts.length}</span> products
+          {categoryFilter !== 'all' && ` in ${categoryFilter}`}
         </div>
         
-        <div className="flex items-center gap-4">
+        {/* Only sort dropdown remains */}
+        <div className="flex gap-4">
           <select 
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
             <option value="default">Sort by Featured</option>
             <option value="price-low-high">Price: Low to High</option>
@@ -70,6 +86,39 @@ const AllProducts = () => {
           </select>
         </div>
       </div>
+
+      {/* Category Filter Pills - Main category filter */}
+      <div className="flex flex-wrap gap-2 mb-6 justify-center">
+        {categories.map(category => (
+          <button
+            key={category}
+            onClick={() => setCategoryFilter(category)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              categoryFilter === category
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {category === 'all' ? 'All' : category.charAt(0).toUpperCase() + category.slice(1)}
+            {category !== 'all' && ` (${all_product.filter(item => item.category === category).length})`}
+          </button>
+        ))}
+      </div>
+
+      {/* Clear Filters Button */}
+      {(categoryFilter !== 'all' || sortOption !== 'default') && (
+        <div className="text-center mb-6">
+          <button 
+            onClick={() => {
+              setCategoryFilter('all');
+              setSortOption('default');
+            }}
+            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-colors"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      )}
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
@@ -86,52 +135,70 @@ const AllProducts = () => {
         ))}
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        {/* Load More & Show All when there are more products */}
-        {hasMoreProducts && (
-          <>
-            <button
-              onClick={loadMore}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
-            >
-              Load More (20 Products)
-            </button>
-            
-            <button
-              onClick={showAll}
-              className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-colors"
-            >
-              Show All Products
-            </button>
-          </>
-        )}
-
-        {/* Show Less when more than 20 products are displayed */}
-        {hasLessProducts && (
+      {/* No Products Message for Filtered State */}
+      {sortedProducts.length === 0 && categoryFilter !== 'all' && (
+        <div className="text-center py-16">
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">No Products Found</h3>
+          <p className="text-gray-600 mb-4">No products found in the {categoryFilter} category.</p>
           <button
-            onClick={showLess}
-            className="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+            onClick={() => setCategoryFilter('all')}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Show Less
+            View All Categories
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      {sortedProducts.length > 0 && (
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {/* Load More & Show All when there are more products */}
+          {hasMoreProducts && (
+            <>
+              <button
+                onClick={loadMore}
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+              >
+                Load More (20 Products)
+              </button>
+              
+              <button
+                onClick={showAll}
+                className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-colors"
+              >
+                Show All Products
+              </button>
+            </>
+          )}
+
+          {/* Show Less when more than 20 products are displayed */}
+          {hasLessProducts && (
+            <button
+              onClick={showLess}
+              className="bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+            >
+              Show Less
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Show All Message */}
       {!hasMoreProducts && sortedProducts.length > 0 && (
         <div className="text-center py-8">
           <p className="text-lg text-gray-600">
-            You've viewed all {sortedProducts.length} products!
+            You've viewed all {sortedProducts.length} products
+            {categoryFilter !== 'all' && ` in ${categoryFilter}`}!
           </p>
         </div>
       )}
 
-      {/* Empty State */}
-      {sortedProducts.length === 0 && (
+      {/* Empty State for All Products */}
+      {all_product.length === 0 && (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4"></div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">No Products Found</h3>
+          <div className="text-6xl mb-4">📦</div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">No Products Available</h3>
           <p className="text-gray-600">Check back later for new arrivals!</p>
         </div>
       )}

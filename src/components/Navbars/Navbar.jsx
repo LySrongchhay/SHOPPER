@@ -17,6 +17,8 @@ const Navbar = () => {
     { name: 'Men', path: '/mens' },
     { name: 'Women', path: '/womens' },
     { name: 'Kids', path: '/kids' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   const handleSearchSubmit = () => {

@@ -14,7 +14,7 @@ const ProductDisplay = (props) => {
     const images = [product.image, product.image, product.image, product.image];
 
     const handleAddToCart = () => {
-        addToCart(product.id);
+        addToCart(product.id, selectedSize);
         
         // Clear any existing timeout
         if (alertTimeout) {
@@ -52,7 +52,7 @@ const ProductDisplay = (props) => {
                         </div>
                         <div className="flex-grow">
                             <p className="font-semibold">Added to Cart! </p>
-                            <p className="text-sm opacity-90">{product.name}</p>
+                            <p className="text-sm opacity-90">{product.name} - Size {selectedSize}</p>
                         </div>
                         <button 
                             onClick={handleCloseAlert}
@@ -173,12 +173,7 @@ const ProductDisplay = (props) => {
                                 onClick={handleAddToCart}
                                 className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                             >
-                                Add to Cart
-                            </button>
-                            <button className="w-14 h-14 border-2 border-gray-300 rounded-xl flex items-center justify-center hover:border-red-500 transition-colors duration-200">
-                                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
+                                Add to Cart - Size {selectedSize}
                             </button>
                         </div>
 
