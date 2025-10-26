@@ -42,29 +42,29 @@ const ProductDisplay = (props) => {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Success Alert - Top Right (Below Navbar) */}
-            {showAlert && (
-                <div className="fixed top-20 right-4 z-50 animate-fade-in">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 min-w-[300px] max-w-md">
-                        <div className="flex-shrink-0">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                        </div>
-                        <div className="flex-grow">
-                            <p className="font-semibold">Added to Cart! </p>
-                            <p className="text-sm opacity-90">{product.name} - Size {selectedSize}</p>
-                        </div>
-                        <button 
-                            onClick={handleCloseAlert}
-                            className="flex-shrink-0 text-white hover:text-gray-200 transition-colors ml-2"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            )}
+{showAlert && (
+    <div className="fixed top-20 right-4 z-50 animate-fade-in">
+        <div className="bg-white border-2 border-green-300 text-gray-800 px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 min-w-[280px] max-w-md">
+            <div className="flex-shrink-0">
+                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <div className="flex-grow">
+                <p className="font-bold text-sm">Added to cart</p>
+                <p className="text-sm text-gray-600">{product.name} - Size {selectedSize}</p>
+            </div>
+            <button 
+                onClick={handleCloseAlert}
+                className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
+)}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* Left Side: Image Gallery */}

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { ShopContext } from "../../contexts/ShopContext";
 import remove_icon from "../assets/cart_cross_icon.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const CartItems = () => {
   const { 
@@ -23,8 +23,8 @@ const CartItems = () => {
 
   // Promo codes configuration
   const promoCodes = {
-    "SHOPPER": { discount: 15, type: "fixed", message: "15% off your entire order" },
-    "ETEC Center": { discount: 10, type: "percentage", message: "$10 off your order" }
+    "SHOPPER": { discount: 15, type: "fixed", message: "$15 off your entire order" },
+    "ETEC Center": { discount: 10, type: "percentage", message: "10% off your order" }
   };
 
   // Check if cart is empty
@@ -128,7 +128,7 @@ const CartItems = () => {
       setPromoError("");
       setPromoCode("");
     } else {
-      setPromoError("Invalid promo code. Try 'SHOPPER' or 'ETEC Center'");
+      setPromoError("Invalid promo code. Please try again.");
       setAppliedPromo(null);
     }
   };
@@ -191,17 +191,17 @@ const CartItems = () => {
   }
 
   return (
-    <div className="cartitems max-w-[1200px] mx-auto px-4 md:px-8 my-20">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 my-6">
       {/* Cart Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Shopping Cart</h1>
-        <p className="text-gray-600">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-1">Shopping Cart</h1>
+        <p className="text-gray-600 text-sm">
           {totalItems} {totalItems === 1 ? 'item' : 'items'} in your cart
         </p>
       </div>
 
-      {/* Header Row - FIXED ALIGNMENT */}
-      <div className="hidden md:grid grid-cols-[80px_1fr_100px_100px_120px_100px_80px] items-center gap-4 py-5 text-[#454545] text-lg font-semibold border-b border-[#e2e2e2]">
+      {/* Desktop Table Header */}
+      <div className="hidden lg:grid grid-cols-[80px_1fr_100px_100px_120px_100px_80px] items-center gap-4 py-5 text-[#454545] text-lg font-semibold border-b border-[#e2e2e2]">
         <p className="text-center">Product</p>
         <p>Title</p>
         <p className="text-center">Size</p>
@@ -211,173 +211,272 @@ const CartItems = () => {
         <p className="text-center">Remove</p>
       </div>
 
-      {/* Cart Items - FIXED ALIGNMENT */}
-      {cartItemsWithSizes.map((item, index) => (
-        <div
-          key={item.key}
-          className="grid grid-cols-2 md:grid-cols-[80px_1fr_100px_100px_120px_100px_80px] items-center gap-4 py-5 border-b border-[#e2e2e2] text-[#454545]"
-        >
-          {/* Product Image */}
-          <div className="flex justify-center">
-            <img
-              className="h-[60px] w-[60px] object-contain"
-              src={item.product.image}
-              alt={item.product.name}
-            />
-          </div>
-
-          {/* Product Title */}
-          <p className="font-medium text-[15px] md:text-[17px] text-gray-800">
-            {item.product.name}
-          </p>
-          
-          {/* Size Display/Edit */}
-          <div className="flex flex-col items-center gap-1">
-            {editingSize === item.key ? (
-              <div className="flex flex-col items-center gap-2">
-                <select 
-                  defaultValue={item.size}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  onChange={(e) => changeSize(item.product.id, item.size, e.target.value)}
-                >
-                  {['XS','S','M','L','XL'].map(size => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                </select>
-                <button 
-                  onClick={() => setEditingSize(null)}
-                  className="text-xs text-gray-500 hover:text-gray-700"
-                >
-                  Cancel
-                </button>
+      {/* Cart Items */}
+      <div className="space-y-3">
+        {cartItemsWithSizes.map((item) => (
+          <div key={item.key}>
+            {/* Desktop View */}
+            <div className="hidden lg:grid grid-cols-[80px_1fr_100px_100px_120px_100px_80px] items-center gap-4 py-5 border-b border-[#e2e2e2] text-[#454545]">
+              {/* Product Image */}
+              <div className="flex justify-center">
+                <Link to={`/product/${item.product.id}`}>
+                  <img
+                    className="h-[60px] w-[60px] object-contain cursor-pointer hover:scale-105 transition-transform"
+                    src={item.product.image}
+                    alt={item.product.name}
+                  />
+                </Link>
               </div>
-            ) : (
+
+              {/* Product Title */}
+              <Link to={`/product/${item.product.id}`} className="hover:text-blue-600 transition-colors">
+                <p className="font-medium text-[17px] text-gray-800 cursor-pointer">
+                  {item.product.name}
+                </p>
+              </Link>
+              
+              {/* Size Display/Edit */}
               <div className="flex flex-col items-center gap-1">
-                <span className="font-medium">Size {item.size}</span>
-                <button 
-                  onClick={() => setEditingSize(item.key)}
-                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                {editingSize === item.key ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <select 
+                      defaultValue={item.size}
+                      className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      onChange={(e) => changeSize(item.product.id, item.size, e.target.value)}
+                    >
+                      {['XS','S','M','L','XL'].map(size => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                    <button 
+                      onClick={() => setEditingSize(null)}
+                      className="text-xs text-gray-500 hover:text-gray-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-medium">Size {item.size}</span>
+                    <button 
+                      onClick={() => setEditingSize(item.key)}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Price */}
+              <p className="text-center font-medium">${item.product.new_price}</p>
+
+              {/* Quantity Buttons */}
+              <div className="flex items-center justify-center gap-0">
+                <button
+                  onClick={() => removeFromCart(item.product.id, item.size)}
+                  className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors rounded-l"
                 >
-                  Change
+                  -
+                </button>
+                <span className="w-12 text-center border-y border-gray-300 py-1 font-medium">
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={() => addToCart(item.product.id, item.size)}
+                  className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors rounded-r"
+                >
+                  +
                 </button>
               </div>
-            )}
+
+              {/* Total */}
+              <p className="text-center font-semibold">
+                ${item.total.toFixed(2)}
+              </p>
+
+              {/* Remove icon */}
+              <div className="flex justify-center">
+                <img
+                  className="w-[20px] cursor-pointer hover:scale-110 transition-transform"
+                  src={remove_icon}
+                  onClick={() => removeEntireItem(item.product.id, item.size)}
+                  alt="remove"
+                />
+              </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="lg:hidden bg-white rounded-xl border border-gray-200 p-3">
+              <div className="flex gap-3">
+                {/* Product Image */}
+                <div className="flex-shrink-0">
+                  <Link to={`/product/${item.product.id}`}>
+                    <img
+                      className="h-16 w-16 object-contain rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                      src={item.product.image}
+                      alt={item.product.name}
+                    />
+                  </Link>
+                </div>
+                
+                {/* Product Details */}
+                <div className="flex-1 min-w-0">
+                  {/* Header Row */}
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <Link to={`/product/${item.product.id}`} className="hover:text-blue-600 transition-colors">
+                        <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-2 cursor-pointer">
+                          {item.product.name}
+                        </h3>
+                      </Link>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="font-bold text-red-600 text-base">
+                          ${item.product.new_price}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-gray-600">Size:</span>
+                          {editingSize === item.key ? (
+                            <select 
+                              defaultValue={item.size}
+                              className="px-1 py-0.5 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              onChange={(e) => changeSize(item.product.id, item.size, e.target.value)}
+                            >
+                              {['XS','S','M','L','XL'].map(size => (
+                                <option key={size} value={size}>{size}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium text-xs bg-gray-100 px-1.5 py-0.5 rounded">
+                                {item.size}
+                              </span>
+                              <button 
+                                onClick={() => setEditingSize(item.key)}
+                                className="text-blue-600 hover:text-blue-800 text-xs underline"
+                              >
+                                Change
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => removeEntireItem(item.product.id, item.size)}
+                      className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors p-1"
+                    >
+                      <img src={remove_icon} alt="remove" className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Quantity and Total Row */}
+                  <div className="flex items-center justify-between bg-gray-50 rounded-lg px-2 py-1.5">
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600 font-medium">Qty:</span>
+                      <div className="flex items-center gap-0 bg-white rounded border border-gray-300">
+                        <button
+                          onClick={() => removeFromCart(item.product.id, item.size)}
+                          className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors text-sm font-medium text-gray-600"
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center py-1 font-semibold text-gray-900 text-sm">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => addToCart(item.product.id, item.size)}
+                          className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors text-sm font-medium text-gray-600"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Total */}
+                    <div className="text-right">
+                      <p className="text-xs text-gray-600 font-medium">Total</p>
+                      <p className="font-bold text-gray-900 text-sm">
+                        ${item.total.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+        ))}
+      </div>
 
-          {/* Price */}
-          <p className="text-center font-medium">${item.product.new_price}</p>
-
-          {/* Quantity Buttons */}
-          <div className="flex items-center justify-center gap-0">
-            <button
-              onClick={() => removeFromCart(item.product.id, item.size)}
-              className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors rounded-l"
-            >
-              -
-            </button>
-            <span className="w-12 text-center border-y border-gray-300 py-1 font-medium">
-              {item.quantity}
-            </span>
-            <button
-              onClick={() => addToCart(item.product.id, item.size)}
-              className="w-8 h-8 flex items-center justify-center border border-gray-300 cursor-pointer hover:bg-gray-100 transition-colors rounded-r"
-            >
-              +
-            </button>
-          </div>
-
-          {/* Total */}
-          <p className="text-center font-semibold">
-            ${item.total.toFixed(2)}
-          </p>
-
-          {/* Remove icon */}
-          <div className="flex justify-center">
-            <img
-              className="w-[20px] cursor-pointer hover:scale-110 transition-transform"
-              src={remove_icon}
-              onClick={() => removeEntireItem(item.product.id, item.size)}
-              alt="remove"
-            />
-          </div>
-        </div>
-      ))}
-
-      {/* Bottom Section */}
-      <div className="cartitem-down flex flex-col md:flex-row justify-between gap-10 mt-20">
-        {/* Totals */}
-        <div className="flex-1 flex flex-col gap-6">
-          <h1 className="text-2xl font-semibold">Cart Totals</h1>
-          <div className="text-[16px] bg-gray-50 p-6 rounded-lg">
-            <div className="flex justify-between py-2">
-              <p>Subtotal</p>
-              <p>${subtotal.toFixed(2)}</p>
+      {/* Bottom Section - Mobile Optimized */}
+      <div className="mt-6 space-y-6 lg:flex lg:space-y-0 lg:gap-8">
+        {/* Totals Section */}
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold mb-3">Cart Totals</h2>
+          <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-700 text-sm">Subtotal</span>
+              <span className="font-semibold text-sm">${subtotal.toFixed(2)}</span>
             </div>
             
             {/* Applied Promo Code */}
             {appliedPromo && (
               <>
-                <div className="flex justify-between py-2 text-green-600">
-                  <div className="flex items-center gap-2">
-                    <span>Discount ({appliedPromo})</span>
+                <div className="flex justify-between items-center text-green-600">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm">Discount</span>
                     <button 
                       onClick={removePromoCode}
-                      className="text-red-500 hover:text-red-700 text-sm"
+                      className="text-red-500 hover:text-red-700 text-xs"
                     >
                       ✕
                     </button>
                   </div>
-                  <p>-${discount.toFixed(2)}</p>
-                </div>
-                <div className="text-sm text-green-600 mb-2">
-                  {promoCodes[appliedPromo].message}
+                  <span className="font-semibold text-sm">-${discount.toFixed(2)}</span>
                 </div>
               </>
             )}
             
-            <hr className="my-3" />
-            <div className="flex justify-between py-2">
-              <p>Shipping Fee</p>
-              <p className="text-green-600">Free</p>
+            <div className="border-t border-gray-200 pt-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 text-sm">Shipping</span>
+                <span className="text-green-600 font-semibold text-sm">Free</span>
+              </div>
             </div>
-            <hr className="my-3" />
-            <div className="flex justify-between py-2 font-semibold text-lg">
-              <h3>Total</h3>
-              <h3 className={appliedPromo ? "text-green-600" : ""}>
-                ${finalTotal.toFixed(2)}
-                {appliedPromo && (
-                  <span className="text-sm text-gray-500 line-through ml-2">
-                    ${subtotal.toFixed(2)}
-                  </span>
-                )}
-              </h3>
+            
+            <div className="border-t border-gray-200 pt-3">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">Total</span>
+                <span className={`font-bold text-lg ${appliedPromo ? "text-green-600" : "text-gray-900"}`}>
+                  ${finalTotal.toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
+          
           <button 
             onClick={handleProceedToCheckout}
-            className="w-full md:w-[262px] h-[58px] bg-[#ff5a5a] text-white text-[16px] font-semibold rounded-md hover:bg-[#e14d4d] transition-all duration-300 transform hover:scale-105 cursor-pointer shadow-lg"
+            className="w-full mt-4 h-12 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all duration-300 cursor-pointer shadow-lg active:scale-95"
           >
-            PROCEED TO CHECKOUT
+            CHECKOUT
           </button>
         </div>
 
-        {/* Promo Code */}
-        <div className="flex-1 text-[16px] font-medium">
-          <p className="text-[#555] mb-2">
-            If you have a promo code, enter it here:
-          </p>
+        {/* Promo Code Section */}
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold mb-3">Promo Code</h2>
           
           {/* Success Message */}
           {appliedPromo && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            <div className="mb-3 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <strong>Promo Applied!</strong>
-                  <p className="text-sm">{promoCodes[appliedPromo].message}</p>
+                  <strong className="block text-sm">Promo Applied!</strong>
                 </div>
                 <button 
                   onClick={removePromoCode}
-                  className="text-green-700 hover:text-green-900"
+                  className="text-green-700 hover:text-green-900 font-semibold text-sm"
                 >
                   Remove
                 </button>
@@ -387,14 +486,14 @@ const CartItems = () => {
 
           {/* Error Message */}
           {promoError && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <div className="mb-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
               {promoError}
             </div>
           )}
 
-          <form onSubmit={handlePromoSubmit} className="flex w-full md:w-[504px] bg-[#eaeaea] rounded-md overflow-hidden h-[64px]">
+          <form onSubmit={handlePromoSubmit} className="flex gap-2">
             <input
-              className="flex-1 px-4 bg-transparent outline-none text-[16px]"
+              className="flex-1 px-3 py-3 bg-gray-100 rounded-lg outline-none text-sm border border-transparent focus:border-blue-500 transition-colors"
               type="text"
               placeholder="Enter promo code"
               value={promoCode}
@@ -406,7 +505,7 @@ const CartItems = () => {
             />
             <button 
               type="submit"
-              className="w-[130px] bg-black text-white text-[16px] font-medium hover:bg-gray-800 transition cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="px-4 py-3 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed flex-shrink-0"
               disabled={!promoCode.trim() || !!appliedPromo}
             >
               {appliedPromo ? "Applied" : "Apply"}
@@ -429,6 +528,12 @@ const CartItems = () => {
         }
         .animate-fade-in-up {
           animation: fade-in-up 0.5s ease-out;
+        }
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </div>

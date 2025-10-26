@@ -13,7 +13,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navLinks = [
-    { name: 'Shop', path: '/' },
+    { name: 'Home', path: '/' },
     { name: 'Men', path: '/mens' },
     { name: 'Women', path: '/womens' },
     { name: 'Kids', path: '/kids' },

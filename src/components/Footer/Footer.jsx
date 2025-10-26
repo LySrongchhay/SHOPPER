@@ -1,6 +1,6 @@
 import React from 'react';
 import footer_logo from '../assets/logo_big.png';
-
+import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
     <footer className="w-full bg-gray-900 py-12 px-6 flex flex-col items-center gap-8">
@@ -13,10 +13,10 @@ const Footer = () => {
 
       {/* Quick Links */}
       <div className="flex flex-wrap justify-center gap-8 text-gray-400 text-sm">
-        <p className="hover:text-white transition-colors">Home</p>
+        <Link to={'/'}><p className="hover:text-white transition-colors">Home</p></Link>
         
-        <p className="hover:text-white transition-colors">About</p>
-        <p className="hover:text-white transition-colors">Contact</p>
+        <Link to={'/about'}><p className="hover:text-white transition-colors">About Us</p></Link>
+        <Link to={'/contact'}><p className="hover:text-white transition-colors">Contact</p></Link>
         <p className="hover:text-white transition-colors">Privacy Policy</p>
         <p className="hover:text-white transition-colors">Terms of Service</p>
       </div>

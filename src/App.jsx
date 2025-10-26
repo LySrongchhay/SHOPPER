@@ -10,6 +10,7 @@ import Footer from './components/Footer/Footer'
 import SearchResults from './components/SearchResults/SearchResults.jsx'
 import About from './components/About/About.jsx'
 import Contact from './components/Contact/Contact.jsx'
+import ScrollToTop from './components/ScrollToTop/ScrollToTop.js'
 
 // import men_banner from './components/assets/banner_mens.png'
 // import women_banner from './components/assets/banner_women.png'
@@ -19,6 +20,7 @@ import Contact from './components/Contact/Contact.jsx'
 const App = () => {
   return (
     <div>
+      <ScrollToTop/>
       <Navbar/>
       <Routes>
         <Route path='/' element={<Shop/>}/>
