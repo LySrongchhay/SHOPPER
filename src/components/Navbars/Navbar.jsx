@@ -107,7 +107,7 @@ const Navbar = () => {
               <button className="px-4 py-1.5 border border-blue-600 text-blue-600 font-medium rounded-lg 
                     hover:bg-blue-600 hover:text-white hover:shadow-md 
                     active:scale-95 transition-all duration-300 cursor-pointer">
-                Login
+                Sign Up
               </button>
             </Link>
 
@@ -216,7 +216,7 @@ const Navbar = () => {
             <Link to='/login' onClick={() => setIsOpen(false)}>
               <button className="w-full px-4 py-2 border border-blue-600 text-blue-600 font-medium rounded-lg 
                     hover:bg-blue-600 hover:text-white transition-all duration-300 cursor-pointer">
-                Sign Up
+                Login
               </button>
             </Link>
           </div>
